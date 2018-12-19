@@ -21,9 +21,9 @@ import javax.swing.ImageIcon;
  
 public class creatImage {
     // 宽度  
-    private static final int WIDTH = 1000;  
+    private static final int WIDTH = 600;  
     // 高度  
-    private static final int HEIGHT = 950;  
+    private static final int HEIGHT = 400;  
     // 双字节字符字体大小  
     private static final int DOUBLE_FONT_SIZE = 15; 
     // 单字节字符字体大小
@@ -33,11 +33,11 @@ public class creatImage {
     // 水印透明度
     private static float alpha = 0.8f;
     // 水印横向位置
-    private static int positionWidth = 150;
+    private static int positionWidth = 200;
     // 水印纵向位置
-    private static int positionHeight = 300;
+    private static int positionHeight =400;
     // 水印文字字体
-    private static Font font = new Font("宋体", Font.BOLD, 115);
+    private static Font font = new Font("宋体", Font.BOLD, 65);
     // 水印文字颜色
     private static Color color = new Color(230, 230, 230);
     /** 
@@ -132,15 +132,16 @@ public class creatImage {
     }  
   
     //添加文字水印
-    public static void markImageByText(String logoText, String srcImgPath,
+    public static BufferedImage markImageByText(String logoText, String srcImgPath,
             String targerPath, Integer degree) {
          
         InputStream is = null;
         OutputStream os = null;
+        BufferedImage buffImg=null;
         try {
             // 1、源图片
             Image srcImg = ImageIO.read(new File(srcImgPath));
-            BufferedImage buffImg = new BufferedImage(srcImg.getWidth(null),srcImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
+            buffImg = new BufferedImage(srcImg.getWidth(null),srcImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
  
             // 2、得到画笔对象
             Graphics2D g = buffImg.createGraphics();
@@ -183,6 +184,7 @@ public class creatImage {
                 e.printStackTrace();
             }
         }
+		return buffImg;
     }
     
     //添加图片水印

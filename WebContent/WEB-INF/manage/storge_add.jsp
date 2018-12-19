@@ -33,6 +33,8 @@
 	charset="utf-8"></script>
 <script src="<%=basePath%>/js/jquery.serializejson.js"></script>
 <script src="<%=basePath%>/js/jquery.serializejson.min.js"></script>
+<script type="text/javascript"
+	src="<%=basePath%>/assets/js/xadmin.js"></script>
 </head>
 <style>
  .infoTb table { white-space: nowrap; width: 90%;font-size: 14px; 
@@ -69,7 +71,7 @@
 	         </td>
 			<th>药品名称：</th>
 	        <td>
-	        	 <input type="text" id="drug_name" list="drug_names"/>
+	        	 <input type="text" id="drug_name" list="drug_names" name="drug_name" />
 	         <datalist id="drug_names">
 	          	<c:forEach items="${requestScope.drugList}" var="drugs">
 					<option value="${drugs.DRUG_NAME}">${drugs.DRUG_NAME}</option>
@@ -142,7 +144,7 @@
 			</td>
 			<th>采购总量</th>
 			<td>
-				<input type="text" id="total">
+				<input type="text" id="total" name="total">
 			</td>
 	    </tr>
 	    <tr>
@@ -156,7 +158,7 @@
                 <input type="button"  onclick="DelRow();" value="删除"> 
                 <input type="button" onclick="AddRow();" value="添加">
                 <input type="button" value="保存" onclick="getTableContent()">
-                <input type="button" value="提交审核" onclick="submitTable()">
+                <input type="button" value="生成采购单" onclick="submitTable()">
             </div>
             <div class="">
                 <input type="hidden" id="hid" name="hid" />    
@@ -186,12 +188,7 @@
 <p><div id="result"></div></p>
 </body>
 <script type="text/javascript">
-		var list1=new Array();
-		var list2=new Array();
         //添加行
-        
-        
-        
         function AddRow() {
         	$.ajax({
         		type:"POST",
@@ -206,12 +203,6 @@
         			alert("shibai");
         		}
         	});
-        	
-        	
-        	
-        	
-        	
-        	
         	var id = $("#drug_id").val();
 			var name = $("#drug_name").val();
 			var psycho = $("#psycho").val();
@@ -289,25 +280,30 @@
           }
         
         function submitTable(){
-        	var data = getTableContent();
-        	console.log("提交"+data);
-        	$.ajax({
-    			url : "<%=basePath%>/drug/addDrug.action",
-    			type: "POST",
-    			data:$("#myForm").serialize(),
-    			success : function(res) {
-    				if(res==0){
-    					alert("添加成功");
-    				}
-    				if(res==1){
-    					alert("添加失败");
-    				}
-    				//删除成功或是失败都需要跳回列表页
-    				window.location.href="<%=basePath%>/drug/toDrugJSP.action"
-    			}
-    		});
-        	
-        }
+        	var sy=prompt("请输入水印内容");
+        	if(sy!=null&&sy!=""){
+            var that = this; 
+            //多窗口模式，层叠置顶
+            layer.open({
+              type: 2 //此处以iframe举例
+              ,title: '采购单预览'
+              ,area: ['600px', '400px']
+              ,shade: 0
+              ,maxmin: true
+              
+              ,content: '<%=basePath%>/stock/creatImage.action?sy='+sy
+              ,btn: ['关闭本页'] 
+              ,btn2: function(){
+                layer.closeAll();
+              }
+              
+              /* ,zIndex: layer.zIndex //重点1
+              ,success: function(layero){
+                layer.setTop(layero); //重点2
+              } */
+            });
+        	}
+          }
         $("#total").on("blur",function(){ 
             var total =$("#total").val();
             console.log(total);
@@ -327,33 +323,5 @@
             console.log(totalP); 
         });
         
-        function creatImage(){
-        	var rowCount = $("#tab1>tbody>tr").length;
-        	var mytable = document.getElementById("tab1");
-            var state = [];
-            var a=[];
-            var rows = $("#tab1>tbody>tr").length;
-            for(var i=1; i<rows+1; i++){
-              for(var j=2; j<12; j++){
-                if(!state[i]){
-                	state[i] = new Array();
-                }
-                state[i][j] = mytable.rows[i].cells[j].innerText;
-              }
-              a.push({i:state[i]});
-              var b=JSON.stringify(a)
-        }
-              console.log(b+"");
-        	$.ajax({
-        		type:"post",
-        		url:"<%=basePath%>/exportTable/exportTable.action",
-//         		contentType: "application/json; charset=UTF-8",
-        		dataType:"JSON",
-        		data:b,
-        		success:function(data){
-        			alert(data);
-        		}
-        	});
-        }
     </script>
 </html>
